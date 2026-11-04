@@ -14,8 +14,8 @@ A demonstration database is provided to show how to format input for the style.
 Moreover, the directory `ieee-reference-guide/` contains the examples of the
 [IEEE Reference Guide, V 3.28.2025](https://journals.ieeeauthorcenter.ieee.org/wp-content/uploads/sites/7/IEEE_Reference_Guide.pdf)
 rendered using a `.tex` file and this style, each next to the text of the guide.
-`ieee-reference-guide-replica.tex` reproduces the guide page by page with each example
-typeset by this style, so that its PDF can be compared with the original one, e.g., using
+`ieee-reference-guide-typeset.tex` typesets the guide itself with LaTeX, each example printed
+by this style, so that its PDF can be compared with the original one, e.g., using
 [diff-pdf](https://vslavik.github.io/diff-pdf/).
 
 ## Author

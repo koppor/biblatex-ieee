@@ -26,12 +26,13 @@ jobs:
             luatexbase ctablestack lua-uni-algos luacode
             minted fvextra fancyvrb catchfile etexcmds float
             latex2pydata lineno pgf pgfopts upquote xcolor tex-gyre
+            titlesec enumitem
       - name: Typeset
         working-directory: ieee-reference-guide
-        run: latexmk -interaction=nonstopmode -halt-on-error ieee-reference-guide ieee-reference-guide-replica
+        run: latexmk -interaction=nonstopmode -halt-on-error ieee-reference-guide ieee-reference-guide-typeset
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ieee-reference-guide
           path: |
             ieee-reference-guide/ieee-reference-guide.pdf
-            ieee-reference-guide/ieee-reference-guide-replica.pdf
+            ieee-reference-guide/ieee-reference-guide-typeset.pdf
