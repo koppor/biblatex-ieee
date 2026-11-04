@@ -61,6 +61,10 @@
 \DeclareFieldFormat{eventtitle}{#1\isdot}
 \DeclareFieldFormat[manual]{sentencecase}{#1}
 \DeclareFieldFormat{url}{\bibstring{url}\addcolon\space\url{#1}\nopunct}
+\DeclareFieldFormat[video]{url}{\bibstring{urlvideo}\addcolon\space\url{#1}\nopunct}
+\DeclareFieldFormat[article,periodical]{part}{pt\adddot\addnbspace#1}
+% Example: "(in Russian)"
+\DeclareListWrapperFormat{language}{\mkbibparens{in\addspace#1}}
 \DeclareFieldFormat{urldate}{\bibstring{urlseen}\space#1}
 \DeclareFieldFormat*{volume}
   {\bibstring{volume}\addnbspace#1}
@@ -78,6 +82,7 @@
 \NewBibliographyString{patentjp}
 \NewBibliographyString{presentedat}
 \NewBibliographyString{standard}
+\NewBibliographyString{urlvideo}
 
 \DefineBibliographyStrings{english}{
   artno       = Art\adddot\addspace no\adddot      ,
@@ -92,6 +97,9 @@
   standard    = Standard                          ,
   techreport  = Tech\adddot\addspace Rep\adddot    ,
   url         = [Online]\adddot\addspace Available ,
+  urlvideo    = [Online Video]\adddot\addspace Available ,
+  forthcoming = to be published                    ,
+  submitted   = submitted for publication          ,
   urlseen     = Accessed\addcolon
 }
 
@@ -176,17 +184,20 @@
       \bibstring{presentedat}%
       \printfield{eventtitle}%
     }%
-  \ifboolexpr{
-    test {\iffieldundef{venue}}
-    and
-    test {\iffieldundef{eventyear}}
-  }
+  % Example: "presented at the 32nd ESA Antenna Workshop, Noordwijk, The
+  % Netherlands, Oct. 5--8, 2010"
+  \newunit
+  \printfield{venue}%
+  \newunit
+  % The event date replaces the publication date, which would repeat the year
+  \iffieldundef{eventyear}
     {}
-    {\setunit*{\addspace}%
-     \printtext[parens]{%
-       \printfield{venue}%
-       \setunit*{\addcomma\space}%
-       \printeventdate}}%
+    {%
+      \printeventdate
+      \clearfield{year}%
+      \clearfield{month}%
+      \clearfield{day}%
+    }%
   \newunit
 }
 
@@ -207,15 +218,24 @@
 }
 
 \renewbibmacro*{issue+date}{%
-  \printtext{%
-    \iffieldundef{issue}
-      {\usebibmacro{date}}
-      {%
-        \printfield{issue}%
-        \setunit*{\addspace}%
-        \usebibmacro{date}%
+  % An empty \printtext would still print the pending punctuation
+  \ifboolexpr{
+    test {\iffieldundef{issue}}
+    and
+    test {\iffieldundef{year}}
+  }
+    {}
+    {%
+      \printtext{%
+        \iffieldundef{issue}
+          {\usebibmacro{date}}
+          {%
+            \printfield{issue}%
+            \setunit*{\addspace}%
+            \usebibmacro{date}%
+          }%
       }%
-  }%
+    }%
   \newunit
   \usebibmacro{issue}%
   \newunit
@@ -379,6 +399,8 @@
 
 \newbibmacro*{volume+number}{%
   \printfield{volume}%
+  \newunit
+  \printfield{part}%
   \newunit
   \printfield{number}%
 }
@@ -580,6 +602,10 @@
   \newunit\newblock
   \usebibmacro{journal+issuetitle}%
   \newunit
+  % Example: "IEEE Trans. Antennas Propag., to be published."
+  % Example: "IEEE Commun. Lett., early access, Dec. 11, 2018, doi: ..."
+  \printfield{pubstate}%
+  \newunit
   \usebibmacro{byeditor+others}%
   \newunit
   \usebibmacro{pages}%
@@ -596,7 +622,7 @@
   \newunit\newblock
   \usebibmacro{doi+eprint+url}%
   \newunit\newblock
-  \usebibmacro{addendum+pubstate}%
+  \printfield{addendum}%
   \setunit{\bibpagerefpunct}\newblock
   \usebibmacro{pageref}%
   \newunit\newblock
@@ -821,14 +847,14 @@
   \printfield{version}%
   \setunit{\adddot\addspace}%
   \printfield{note}%
-  \newunit\newblock
+  % Example: "J. Smith. “Obama inaugurated as President.” CNN.com. Accessed:"
+  \setunit{\adddot\addspace}\newblock
   \printlist{organization}%
   \setunit{\adddot\addspace}%
   \iftoggle{bbx:eprint}
     {\usebibmacro{eprint}}
     {}%
-  \setunit{\adddot\addspace}%
-  \newunit\newblock
+  \setunit{\adddot\addspace}\newblock
   \usebibmacro{url+urldate}%
   \setunit{\adddot\addspace}%
   \usebibmacro{addendum+pubstate}%
@@ -894,6 +920,9 @@
   \printfield{version}%
   \newunit\newblock
   \usebibmacro{date}%
+  \newunit
+  % Example: "Rep. ARCRL-66-234 (II), 1994, vol. 2."
+  \printfield{volume}%
   \newunit
   \printfield{note}%
   \newunit\newblock
@@ -979,6 +1008,33 @@
   \newunit\newblock
   \usebibmacro{doi+eprint+url}%
   \newunit\newblock
+  \usebibmacro{addendum+pubstate}%
+  \setunit{\bibpagerefpunct}\newblock
+  \usebibmacro{pageref}%
+  \newunit\newblock
+  \iftoggle{bbx:related}
+    {\usebibmacro{related:init}%
+     \usebibmacro{related}}
+    {}%
+  \usebibmacro{finentry}}
+
+% Example: "Doane Academy, Burlington, NJ, USA. Second Grade Bossy R. (Feb. 28,
+% 2013). Accessed: Jun. 3, 2018. [Online Video]. Available: https://..."
+\DeclareBibliographyDriver{video}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{begentry}%
+  \usebibmacro{author/editor+others/translator+others}%
+  \setunit{\adddot\addspace}\newblock
+  \usebibmacro{title-in-maintitle}%
+  \setunit{\adddot\addspace}%
+  \printlist{language}%
+  \setunit{\adddot\addspace}%
+  \printfield{note}%
+  \setunit{\adddot\addspace}\newblock
+  \printtext[parens]{\usebibmacro{date}}%
+  \setunit{\adddot\addspace}\newblock
+  \usebibmacro{doi+eprint+url}%
+  \setunit{\adddot\addspace}\newblock
   \usebibmacro{addendum+pubstate}%
   \setunit{\bibpagerefpunct}\newblock
   \usebibmacro{pageref}%
