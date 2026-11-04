@@ -50,13 +50,30 @@
 \end{luacode*}
 \newcommand*{\bibsource}[1]{\directlua{bibsource("\luaescapestring{#1}")}}
 
-% \guide{<key>}{<text of the guide>}
-\newcommand*{\guide}[2]{%
-  \item[\cite{#1}] \textbf{Guide:} #2\par
-  \textbf{biblatex-ieee:} \bibentry{#1}%
-  \bibsource{#1}%
+% Each example as rows of three columns: number, label, content.
+% The content is a top-aligned minipage, so it wraps within its column.
+\newlength{\guidenumwidth}
+\newlength{\guidelabelwidth}
+\settowidth{\guidenumwidth}{[000]\quad}
+\settowidth{\guidelabelwidth}{\textbf{biblatex-ieee:}\quad}
+\newcommand{\guiderow}[3]{%
+  \par\noindent
+  \makebox[\guidenumwidth][l]{#1}%
+  \makebox[\guidelabelwidth][l]{\textbf{#2}}%
+  \begin{minipage}[t]{\dimexpr\linewidth-\guidenumwidth-\guidelabelwidth\relax}
+    \raggedright #3%
+  \end{minipage}\par
+  \smallskip
 }
-\newenvironment{examples}{\begin{description}\setlength\itemsep{1ex}}{\end{description}}
+
+% \guide{<key>}{<text of the guide>}
+\newcommand{\guide}[2]{%
+  \guiderow{\cite{#1}}{Guide:}{#2}%
+  \guiderow{}{biblatex-ieee:}{\bibentry{#1}}%
+  \guiderow{}{BibTeX:}{\bibsource{#1}}%
+  \medskip
+}
+\newenvironment{examples}{\par}{\par}
 
 \title{IEEE Reference Guide examples typeset with \textsf{biblatex-ieee}}
 \date{\today}
