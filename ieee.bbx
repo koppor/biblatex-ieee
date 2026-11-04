@@ -1140,7 +1140,7 @@
 
 % Example: "Special Issue on Artificial Neural Network Applications, Proc. IEEE,
 % vol. 84, pp. 1353--1576, Oct. 1996."
-% A virtual journal (online, i.e., with url) quotes its issue title:
+% A virtual journal ("entrysubtype = {virtual}") quotes its issue title:
 % Example: "T. Robertson, Ed., “RFIC Virtual Journal--Issue 6,” in IEEE RFIC
 % Virtual Journal, Oct. 2014. [Online]. Available: http://..."
 \DeclareBibliographyDriver{periodical}{%
@@ -1151,13 +1151,13 @@
   \iffieldundef{issuetitle}
     {}
     {%
-      \iffieldundef{url}
-        {\printfield[titlecase]{issuetitle}}
+      \iffieldequalstr{entrysubtype}{virtual}
         {%
           \printtext{\mkbibquote{\printfield[titlecase]{issuetitle}\isdot}}%
           \setunit{\addcomma\space}%
           \usebibmacro{in:}%
-        }%
+        }
+        {\printfield[titlecase]{issuetitle}}%
       \clearfield{issuetitle}%
       \newunit
     }%
