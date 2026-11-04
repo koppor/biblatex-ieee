@@ -67,10 +67,14 @@
 }
 
 % \guide{<key>}{<text of the guide>}
+% One unbreakable box per example, so that a page break never splits it
 \newcommand{\guide}[2]{%
-  \guiderow{\cite{#1}}{Guide:}{#2}%
-  \guiderow{}{biblatex-ieee:}{\bibentry{#1}}%
-  \guiderow{}{BibTeX:}{\bibsource{#1}}%
+  \par\noindent
+  \begin{minipage}{\linewidth}
+    \guiderow{\cite{#1}}{Guide:}{#2}%
+    \guiderow{}{biblatex-ieee:}{\bibentry{#1}}%
+    \guiderow{}{BibTeX:}{\bibsource{#1}}%
+  \end{minipage}\par
   \medskip
 }
 \newenvironment{examples}{\par}{\par}
