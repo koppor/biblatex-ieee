@@ -25,11 +25,13 @@ jobs:
             xstring xurl lm fontspec microtype selnolig
             luatexbase ctablestack lua-uni-algos luacode
             minted fvextra fancyvrb catchfile etexcmds float
-            latex2pydata lineno pgf pgfopts upquote xcolor
+            latex2pydata lineno pgf pgfopts upquote xcolor tex-gyre
       - name: Typeset
         working-directory: ieee-reference-guide
-        run: latexmk -interaction=nonstopmode -halt-on-error ieee-reference-guide
+        run: latexmk -interaction=nonstopmode -halt-on-error ieee-reference-guide ieee-reference-guide-replica
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ieee-reference-guide
-          path: ieee-reference-guide/ieee-reference-guide.pdf
+          path: |
+            ieee-reference-guide/ieee-reference-guide.pdf
+            ieee-reference-guide/ieee-reference-guide-replica.pdf

@@ -9,4 +9,6 @@ build/*
 ieee-reference-guide/*
 !ieee-reference-guide/ieee-reference-guide.tex
 !ieee-reference-guide/ieee-reference-guide.bib
+!ieee-reference-guide/ieee-reference-guide-replica*.tex
+!ieee-reference-guide/ieee-reference-guide-replica.py
 !ieee-reference-guide/.latexmkrc
