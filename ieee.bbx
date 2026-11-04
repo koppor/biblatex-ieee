@@ -53,7 +53,7 @@
 }
 \DeclareFieldFormat{sentencecase}{\bbx@colon@search{\MakeSentenceCase*}{#1}}
 \DeclareFieldFormat[incollection,inproceedings]{series}
-  {\bibstring{jourser}\addnbspace#1}
+  {\bibstring{jourser}\addnbspace#1\isdot}
 \DeclareFieldFormat[misc,online,report]{title}{\mkbibquote{#1\isdot}}
 \DeclareFieldFormat[periodical]{title}{\mkbibemph{#1\isdot}}
 \DeclareFieldFormat{howpublished}{#1\isdot}
@@ -62,6 +62,19 @@
 \DeclareFieldFormat[manual]{sentencecase}{#1}
 \DeclareFieldFormat{url}{\bibstring{url}\addcolon\space\url{#1}\nopunct}
 \DeclareFieldFormat[video]{url}{\bibstring{urlvideo}\addcolon\space\url{#1}\nopunct}
+% Example: "[PowerPoint slides]. Available: http://..."
+\DeclareFieldFormat[online]{url}{%
+  \iffieldundef{type}
+    {\bibstring{url}}
+    {[\printfield{type}]\adddot\addspace Available}%
+  \addcolon\space\url{#1}\nopunct}
+\DeclareFieldFormat[dataset]{title}{\mkbibquote{#1\isdot}}
+% Example: "presented at the IEEE Summer Power Meeting, ..., Paper 90 SM 690-0
+% PWRS" and "in IEDM Tech. Dig., 1993, vol. 2, no. 8"
+\DeclareFieldFormat[inproceedings]{number}{%
+  \iffieldundef{eventtitle}
+    {\bibstring{number}\addnbspace#1}
+    {Paper\addnbspace#1}}
 \DeclareFieldFormat[article,periodical]{part}{pt\adddot\addnbspace#1}
 % Example: "(in Russian)"
 \DeclareListWrapperFormat{language}{\mkbibparens{in\addspace#1}}
@@ -201,6 +214,44 @@
   \newunit
 }
 
+% Example: "Tokyo: Nihon Keizai Hyoronsha (in Japanese), 2000"
+\renewbibmacro*{publisher+location+date}{%
+  \printlist{location}%
+  \iflistundef{publisher}
+    {\setunit*{\addcomma\space}}
+    {\setunit*{\addcolon\space}}%
+  \printlist{publisher}%
+  \ifboolexpr{
+    not test {\iflistundef{language}}
+    and (
+      test {\ifentrytype{book}}
+      or
+      test {\ifentrytype{inbook}}
+      or
+      test {\ifentrytype{incollection}}
+    )
+  }
+    {%
+      \setunit*{\addspace}%
+      \printlist{language}%
+    }
+    {}%
+  \setunit*{\addcomma\space}%
+  \usebibmacro{date}%
+  \newunit
+}
+
+% "(Nov. 2006)", or "(n.d.)" when neither date nor access date is known
+\newbibmacro*{date(online)}{%
+  \iffieldundef{year}
+    {%
+      \iffieldundef{urlyear}
+        {\printtext[parens]{\bibstring{nodate}}}
+        {}%
+    }
+    {\printtext[parens]{\usebibmacro{date}}}%
+}
+
 \newbibmacro*{institution+location}{%
   \printlist{institution}%
   \newunit
@@ -301,14 +352,12 @@
           \usebibmacro{in:}%
           \usebibmacro{maintitle+booktitle}%
           \clearfield{eventtitle}%
-          \clearfield{number}%
         }%
     }
     {%
       \usebibmacro{in:}%
       \usebibmacro{maintitle+booktitle}%
       \clearfield{eventtitle}%
-      \clearfield{number}%
     }%
 }
 
@@ -639,8 +688,6 @@
   \setunit{\labelnamepunct}\newblock
   \usebibmacro{maintitle+title}%
   \usebibmacro{series+number(book)}%
-  \printlist{language}%
-  \newunit\newblock
   \printfield{edition}%
   \newunit\newblock
   \usebibmacro{byauthor}%
@@ -684,8 +731,6 @@
   \setunit{\labelnamepunct}\newblock
   \usebibmacro{title}%
   \newunit
-  \printlist{language}%
-  \newunit\newblock
   \usebibmacro{byauthor}%
   \newunit\newblock
   \ifboolexpr{
@@ -739,8 +784,6 @@
   \setunit{\labelnamepunct}\newblock
   \usebibmacro{title}%
   \newunit
-  \printlist{language}%
-  \newunit\newblock
   \usebibmacro{byauthor}%
   \newunit\newblock
   \usebibmacro{in:}%
@@ -803,13 +846,15 @@
   \newunit\newblock
   \printfield{volumes}%
   \newunit\newblock
-  \usebibmacro{series+number}%
+  \printfield{series}%
   \newunit\newblock
   \printfield{note}%
   \newunit\newblock
   \printlist{organization}%
   \newunit\newblock
   \usebibmacro{volume+part}%
+  \newunit
+  \printfield{number}%
   \newunit
   \usebibmacro{publisher+location+date}%
   \newunit\newblock
@@ -831,12 +876,30 @@
     {}%
   \usebibmacro{finentry}}
 
+% Example: "J. A. Taylor. (Nov. 2006). “Assessment: ...” Presented at Engaging
+% Students: ... Conf., Griffith, Australia. [Online]. Available: http://..."
+% Example: "J. Smith. “Obama inaugurated as President.” CNN.com. Accessed: ..."
+% Example: "“BAR50 series Infineon PIN diode datasheet.” (n.d.). [Online]. ..."
 \DeclareBibliographyDriver{online}{%
   \usebibmacro{bibindex}%
   \usebibmacro{begentry}%
   \usebibmacro{author/editor+others/translator+others}%
   \setunit{\adddot\addspace}%
-  \usebibmacro{title}%
+  \ifboolexpr{
+    test {\ifnameundef{author}}
+    and
+    test {\ifnameundef{editor}}
+  }
+    {%
+      \usebibmacro{title}%
+      \setunit{\adddot\addspace}%
+      \usebibmacro{date(online)}%
+    }
+    {%
+      \usebibmacro{date(online)}%
+      \setunit{\adddot\addspace}%
+      \usebibmacro{title}%
+    }%
   \setunit{\adddot\addspace}%
   \printlist{language}%
   \setunit{\adddot\addspace}%
@@ -847,7 +910,15 @@
   \printfield{version}%
   \setunit{\adddot\addspace}%
   \printfield{note}%
-  % Example: "J. Smith. “Obama inaugurated as President.” CNN.com. Accessed:"
+  \setunit{\adddot\addspace}\newblock
+  \iffieldundef{eventtitle}
+    {}
+    {%
+      \printtext{Presented at\addspace}%
+      \printfield{eventtitle}%
+      \setunit{\addcomma\space}%
+      \printfield{venue}%
+    }%
   \setunit{\adddot\addspace}\newblock
   \printlist{organization}%
   \setunit{\adddot\addspace}%
@@ -961,11 +1032,19 @@
   \newunit\newblock
   \printfield{howpublished}%
   \newunit\newblock
+  % Example: "U.S. Reports, vol. 277, 1928, p. 438"
+  % Example: "IEEE Computer Group Repository, Paper R-67-85"
+  \printfield{volume}%
+  \newunit
+  \printfield{number}%
+  \newunit\newblock
   \printfield{type}%
   \newunit
   \printfield{version}%
   \newunit\newblock
   \usebibmacro{organization+location+date(misc)}%
+  \newunit\newblock
+  \printfield{pages}%
   \newunit\newblock
   \printfield{note}%
   \newunit\newblock
@@ -981,11 +1060,29 @@
     {}%
   \usebibmacro{finentry}}
 
+% Example: "Special Issue on Artificial Neural Network Applications, Proc. IEEE,
+% vol. 84, pp. 1353--1576, Oct. 1996."
+% A virtual journal (online, i.e., with url) quotes its issue title:
+% Example: "T. Robertson, Ed., “RFIC Virtual Journal--Issue 6,” in IEEE RFIC
+% Virtual Journal, Oct. 2014. [Online]. Available: http://..."
 \DeclareBibliographyDriver{periodical}{%
   \usebibmacro{bibindex}%
   \usebibmacro{begentry}%
   \usebibmacro{editor}%
   \setunit{\labelnamepunct}\newblock
+  \iffieldundef{issuetitle}
+    {}
+    {%
+      \iffieldundef{url}
+        {\printfield[titlecase]{issuetitle}}
+        {%
+          \printtext{\mkbibquote{\printfield[titlecase]{issuetitle}\isdot}}%
+          \setunit{\addcomma\space}%
+          \usebibmacro{in:}%
+        }%
+      \clearfield{issuetitle}%
+      \newunit
+    }%
   \usebibmacro{periodical}%
   \newunit
   \printlist{language}%
@@ -995,6 +1092,8 @@
   \printfield{series}%
   \newunit\newblock
   \usebibmacro{volume+number}%
+  \newunit\newblock
+  \usebibmacro{pages}%
   \newunit\newblock
   \printlist{organization}%
   \newunit\newblock
@@ -1031,10 +1130,135 @@
   \setunit{\adddot\addspace}%
   \printfield{note}%
   \setunit{\adddot\addspace}\newblock
-  \printtext[parens]{\usebibmacro{date}}%
+  \iffieldundef{year}
+    {}
+    {\printtext[parens]{\usebibmacro{date}}}%
   \setunit{\adddot\addspace}\newblock
   \usebibmacro{doi+eprint+url}%
   \setunit{\adddot\addspace}\newblock
+  \usebibmacro{addendum+pubstate}%
+  \setunit{\bibpagerefpunct}\newblock
+  \usebibmacro{pageref}%
+  \newunit\newblock
+  \iftoggle{bbx:related}
+    {\usebibmacro{related:init}%
+     \usebibmacro{related}}
+    {}%
+  \usebibmacro{finentry}}
+
+% Example: "Ph.D. dissertation, Radiation Lab., Univ. California, Berkeley,
+% Tech. Rep. 16854, 1995."
+\DeclareBibliographyDriver{thesis}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{begentry}%
+  \usebibmacro{author}%
+  \setunit{\labelnamepunct}\newblock
+  \usebibmacro{title}%
+  \newunit
+  \printlist{language}%
+  \newunit\newblock
+  \usebibmacro{byauthor}%
+  \newunit\newblock
+  \printfield{note}%
+  \newunit\newblock
+  \printfield{type}%
+  \newunit
+  \usebibmacro{institution+location}%
+  \newunit
+  \printfield{number}%
+  \newunit
+  \usebibmacro{date}%
+  \newunit\newblock
+  \usebibmacro{chapter+pages}%
+  \newunit
+  \printfield{pagetotal}%
+  \newunit\newblock
+  \iftoggle{bbx:isbn}
+    {\printfield{isbn}}
+    {}%
+  \newunit\newblock
+  \usebibmacro{doi+eprint+url}%
+  \newunit\newblock
+  \usebibmacro{addendum+pubstate}%
+  \setunit{\bibpagerefpunct}\newblock
+  \usebibmacro{pageref}%
+  \newunit\newblock
+  \iftoggle{bbx:related}
+    {\usebibmacro{related:init}%
+     \usebibmacro{related}}
+    {}%
+  \usebibmacro{finentry}}
+
+% Example: "U.S. Department of Health and Human Services, Aug. 2013, “Treatment
+% Episode Dataset: ...,” U.S. Department of ..., doi: 10.3886/ICPSR30122.v2."
+\DeclareBibliographyDriver{dataset}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{begentry}%
+  \usebibmacro{author/editor+others/translator+others}%
+  \newunit
+  \usebibmacro{date}%
+  \newunit\newblock
+  \printtext[title]{\printfield[titlecase]{title}}%
+  \newunit
+  \printlist{language}%
+  \newunit
+  \printfield{version}%
+  \newunit\newblock
+  \printlist{publisher}%
+  \newunit
+  \printlist{organization}%
+  \newunit\newblock
+  \printfield{note}%
+  \newunit\newblock
+  \usebibmacro{doi+eprint+url}%
+  \newunit\newblock
+  \usebibmacro{addendum+pubstate}%
+  \setunit{\bibpagerefpunct}\newblock
+  \usebibmacro{pageref}%
+  \newunit\newblock
+  \iftoggle{bbx:related}
+    {\usebibmacro{related:init}%
+     \usebibmacro{related}}
+    {}%
+  \usebibmacro{finentry}}
+
+% Example: "D. W. Arning et al. Mixed Mode--Mixed Level Circuit Simulator.
+% (2011). Ngspice. Accessed: Jan. 11, 2019. [Online]. Available: http://..."
+% Repository or archive in organization, publisher in publisher.
+\DeclareBibliographyDriver{software}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{begentry}%
+  \usebibmacro{author/editor+others/translator+others}%
+  \setunit{\adddot\addspace}\newblock
+  \usebibmacro{title-in-maintitle}%
+  \setunit{\adddot\addspace}\newblock
+  \iffieldundef{year}
+    {}
+    {\printtext[parens]{\usebibmacro{date}}}%
+  \setunit{\adddot\addspace}\newblock
+  \printlist{organization}%
+  \setunit{\adddot\addspace}%
+  \iffieldundef{version}
+    {}
+    {\printtext[parens]{\printfield{version}}}%
+  \setunit{\adddot\addspace}\newblock
+  \printlist{publisher}%
+  \setunit{\adddot\addspace}\newblock
+  % "Accessed date. DOI. [Online]. Available: URL" (IEEE Reference Guide, III)
+  \usebibmacro{urldate}%
+  \setunit{\adddot\addspace}%
+  \iftoggle{bbx:doi}
+    {\printfield{doi}}
+    {}%
+  \setunit{\adddot\addspace}%
+  \iftoggle{bbx:eprint}
+    {\usebibmacro{eprint}}
+    {}%
+  \setunit{\adddot\addspace}%
+  \iftoggle{bbx:url}
+    {\usebibmacro{url}}
+    {}%
+  \setunit{\adddot\addspace}%
   \usebibmacro{addendum+pubstate}%
   \setunit{\bibpagerefpunct}\newblock
   \usebibmacro{pageref}%
