@@ -9,6 +9,9 @@
 \usepackage{csquotes}
 \usepackage[style=ieee,backend=biber]{biblatex}
 \usepackage{xurl}
+\usepackage{luacode}
+\usepackage{minted}
+\setminted{fontsize=\footnotesize,breaklines,breakanywhere}
 \usepackage{hyperref}
 \hypersetup{hidelinks}
 
@@ -24,10 +27,34 @@
   {}
 \makeatother
 
+% \bibsource{<key>}: the entry's lines of the .bib file, found by its key
+\begin{luacode*}
+  local bibfile = "ieee-reference-guide.bib"
+  local lines = {}
+  for line in io.lines(kpse.find_file(bibfile)) do lines[#lines + 1] = line end
+  function bibsource(key)
+    for first, line in ipairs(lines) do
+      if line:sub(1, 1) == "@" and line:find("{" .. key .. ",", 1, true) then
+        for last = first + 1, #lines do
+          if lines[last] == "}" then
+            tex.sprint(string.format(
+              "\\inputminted[firstline=%d,lastline=%d]{bibtex}{%s}",
+              first, last, bibfile))
+            return
+          end
+        end
+      end
+    end
+    tex.error("bibsource: entry '" .. key .. "' not found in " .. bibfile)
+  end
+\end{luacode*}
+\newcommand*{\bibsource}[1]{\directlua{bibsource("\luaescapestring{#1}")}}
+
 % \guide{<key>}{<text of the guide>}
 \newcommand*{\guide}[2]{%
   \item[\cite{#1}] \textbf{Guide:} #2\par
   \textbf{biblatex-ieee:} \bibentry{#1}%
+  \bibsource{#1}%
 }
 \newenvironment{examples}{\begin{description}\setlength\itemsep{1ex}}{\end{description}}
 
@@ -41,7 +68,8 @@ Each example of the
 \href{https://journals.ieeeauthorcenter.ieee.org/wp-content/uploads/sites/7/IEEE_Reference_Guide.pdf}{IEEE Reference Guide, V 3.28.2025}
 is shown twice: first as given in the guide (\enquote{Guide}; plain text, the
 guide's italics are not reproduced), then as typeset by \textsf{biblatex-ieee}
-from \texttt{ieee-reference-guide.bib} (\enquote{biblatex-ieee}).
+(\enquote{biblatex-ieee}) from the entry of \texttt{ieee-reference-guide.bib}
+printed below it.
 Entry types biblatex has no IEEE driver for (legal citations, government
 documents) are entered as \texttt{@misc}.
 The complete reference list follows at the end.

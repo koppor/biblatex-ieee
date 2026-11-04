@@ -23,7 +23,9 @@ jobs:
           packages: >
             scheme-basic latexmk biblatex biber csquotes etoolbox logreq
             xstring xurl lm fontspec microtype selnolig
-            luatexbase ctablestack lua-uni-algos
+            luatexbase ctablestack lua-uni-algos luacode
+            minted latexminted fvextra fancyvrb catchfile etexcmds float
+            latex2pydata lineno pgf pgfopts upquote xcolor
       - name: Typeset
         working-directory: ieee-reference-guide
         run: latexmk -interaction=nonstopmode -halt-on-error ieee-reference-guide
