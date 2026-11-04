@@ -12,6 +12,8 @@
 \usepackage{xurl}
 \urlstyle{same}
 \usepackage{xcolor}
+\definecolor{linkblue}{HTML}{0563C1}
+\AtBeginDocument{\renewcommand*{\UrlFont}{\color{linkblue}}}
 \usepackage{titlesec}
 \usepackage{titletoc}
 \usepackage{enumitem}
@@ -43,23 +45,25 @@
 \setcounter{secnumdepth}{2}
 \setcounter{tocdepth}{3}
 \titleformat{\section}{\centering\fontsize{14}{17}\bfseries\scshape\color{ieeeblue}}{\thesection.}{0.3em}{}
-\titleformat{\subsection}{\fontsize{14}{17}\selectfont}{\thesubsection.}{0.3em}{}
+\newcommand*{\subsectionlabel}{\thesubsection.}
+\titleformat{\subsection}{\fontsize{14}{17}\selectfont}{\subsectionlabel}{0.3em}{}
 \titleformat{\subsubsection}{\fontsize{12}{15}\bfseries\color{headgray}}{}{0pt}{}
 \titlespacing*{\section}{0pt}{3ex}{2ex}
-\titlespacing*{\subsection}{0pt}{3ex}{1.5ex}
-\titlespacing*{\subsubsection}{0pt}{2ex}{0.5ex}
+\titlespacing*{\subsection}{0pt}{5ex}{2pt}
+\titlespacing*{\subsubsection}{0pt}{2.5ex}{-3pt}
 % Table of contents as in the guide: no leaders, indented levels
 \titlecontents{section}[0pt]{\addvspace{0pt}\bfseries}{\thecontentslabel.\ }{}{\hfill\contentspage}
 \titlecontents{subsection}[18pt]{}{\thecontentslabel.\ }{}{\hfill\contentspage}
 \titlecontents{subsubsection}[36pt]{}{}{}{\hfill\contentspage}
 \setlength{\parindent}{0pt}
-\setlength{\parskip}{1ex}
+\setlength{\parskip}{8pt}
+\newcommand*{\guideindent}{\hspace*{14pt}}
 
-\newcommand*{\guidelabel}[1]{\par\hspace*{22pt}\textit{#1}\par}
+\newcommand*{\guidelabel}[1]{\par\vspace{-4pt}\hspace*{22pt}\textit{#1}\par\vspace{-\parskip}}
 \newlist{guideitems}{itemize}{1}
-\setlist[guideitems]{label=\textbullet, leftmargin=36pt, labelsep=10pt, itemsep=0.3ex, parsep=0pt, topsep=0.3ex}
+\setlist[guideitems]{label={\raisebox{-0.15ex}{\Large\textbullet}}, leftmargin=36pt, labelindent=18pt, labelwidth=!, labelsep=*, align=left, itemsep=1pt, parsep=0pt, topsep=1pt}
 \newlist{guidenumbers}{enumerate}{1}
-\setlist[guidenumbers]{label=\arabic*), leftmargin=36pt, itemsep=0.3ex, parsep=0pt, topsep=0.3ex}
+\setlist[guidenumbers]{label=\arabic*), leftmargin=36pt, labelindent=18pt, labelwidth=!, labelsep=*, align=left, itemsep=1pt, parsep=0pt, topsep=1pt}
 % An example outside of a list
 \newcommand*{\guideexample}[1]{\par{\leftskip=36pt \bibentry{#1}\par}}
 
@@ -87,29 +91,32 @@ V 3.28.2025\hfill\textbf{\fontsize{13}{15}\selectfont\copyright{} 2025 IEEE}
 {\centering\fontsize{18}{22}\bfseries Table of Contents\par}
 \renewcommand{\contentsname}{}
 \vspace*{-4ex}
-\tableofcontents
+{\setlength{\parskip}{0pt}\tableofcontents}
 \clearpage
 
+\renewcommand*{\subsectionlabel}{\hspace*{18pt}\textbf{\thesubsection.}}
 \section{Citing References}
 
 \subsection{References in Text}
 
-References need not be cited in the text. When they are, they appear on the line, in square brackets, inside the punctuation. Grammatically, they may be treated as if they were nouns or footnote numbers, e.g.:
+\guideindent References need not be cited in the text. When they are, they appear on the line, in square brackets, inside the punctuation. Grammatically, they may be treated as if they were nouns or footnote numbers, e.g.:
 
-According to [1]; as demonstrated in [2]; as shown by Brown [4], [5]; as mentioned earlier [2], [4], [5], [6], [7], [9]; Smith [4] and Brown and Jones [5]; Wood et al. [7]
+{\leftskip=14pt According to [1]; as demonstrated in [2]; as shown by Brown [4], [5]; as mentioned earlier [2], [4], [5], [6], [7], [9]; Smith [4] and Brown and Jones [5]; Wood et al. [7]\par}
 
 Reference ranges in text will not include an en dash. All references will be written out. For example, “[1]–[4]” will now be “[1], [2], [3], [4]”.
 
-\textbf{NOTE:} Use “et al.” when three or more names are given for a reference cited in the text.
+\guideindent\textbf{NOTE:} Use “et al.” when three or more names are given for a reference cited in the text.
 
 \subsection{Citing Parts of a Reference}
 
-Check the reference list for “ibid.” or “op. cit.” These refer to a previous reference and should be eliminated from the reference section. In text, cite the earlier reference number and renumber the reference section accordingly. If the “ibid.” gives a new page number, or other information, use the following forms:
+\guideindent Check the reference list for “ibid.” or “op. cit.” These refer to a previous reference and should be eliminated from the reference section. In text, cite the earlier reference number and renumber the reference section accordingly. If the “ibid.” gives a new page number, or other information, use the following forms:
 
-[3, Thm. 1]; [3, Lemma 2]; [3, pp. 5–10]; [3, eq. (2)]; [3, Fig. 1]; [3, Appendix I]; [3, Sect. 4.5]; [3, Ch. 2, pp. 5–10]; [3, Algorithm 5].
+{\leftskip=36pt [3, Thm. 1]; [3, Lemma 2]; [3, pp. 5–10]; [3, eq. (2)]; [3, Fig. 1]; [3, Appendix I]; [3, Sect. 4.5];\newline
+[3, Ch. 2, pp. 5–10]; [3, Algorithm 5].\par}
 
 \textbf{NOTE:} Editing of references may entail careful renumbering of references, as well as the citations in text.
 
+\renewcommand*{\subsectionlabel}{\thesubsection.}
 \section{Style}
 \begin{guideitems}
   \item Reference numbers are set flush left and form a column of their own, hanging out beyond the body of the reference. The reference numbers are on the line, enclosed in square brackets.
@@ -947,6 +954,7 @@ URLs are not hyperlinked in the proof.
   \item Break before or after an equal sign or an ampersand (follow the same rule for the “at” (@) symbol).
 \end{guideitems}
 
+\renewcommand*{\subsectionlabel}{\textbf{\thesubsection.}}
 \section{Useful Abbreviations in References}
 
 Tips for abbreviating periodical titles in references:
