@@ -6,6 +6,10 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -18,7 +22,7 @@ jobs:
         with:
           packages: >
             scheme-basic latexmk biblatex biber csquotes etoolbox logreq
-            xstring xurl lm
+            xstring xurl lm fontspec microtype selnolig
       - name: Typeset
         working-directory: ieee-reference-guide
         run: latexmk -interaction=nonstopmode -halt-on-error ieee-reference-guide
