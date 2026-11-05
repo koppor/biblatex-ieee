@@ -11,10 +11,7 @@ appropriate option:
 ```
 
 A demonstration database is provided to show how to format input for the style.
-Moreover, the directory `ieee-reference-guide/` contains the examples of the
-[IEEE Reference Guide, V 3.28.2025](https://journals.ieeeauthorcenter.ieee.org/wp-content/uploads/sites/7/IEEE_Reference_Guide.pdf)
-rendered using a `.tex` file and this style, each next to the text of the guide.
-`ieee-reference-guide-typeset.tex` typesets the guide itself with LaTeX.
+The directory `ieee-reference-guide/` compares the style with the IEEE Reference Guide (see its README).
 
 ## Author
 

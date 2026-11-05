@@ -543,6 +543,24 @@
   \printfield{number}%
 }
 
+% Example: "Harrison, NJ, USA, Tech. Ser. RC23, 1992"
+\newbibmacro*{publisher+location+series+date(manual)}{%
+  \printlist{location}%
+  \iflistundef{publisher}
+    {\setunit*{\addcomma\space}}
+    {\setunit*{\addcolon\space}}%
+  \printlist{publisher}%
+  \iffieldundef{number}
+    {}
+    {%
+      \setunit*{\addcomma\space}%
+      \usebibmacro{series+number}%
+    }%
+  \setunit*{\addcomma\space}%
+  \usebibmacro{date}%
+  \newunit
+}
+
 \newbibmacro*{organization+location+date(misc)}{%
   \printlist{organization}%
   \newunit
@@ -1081,6 +1099,61 @@
   \newunit\newblock
   \iftoggle{bbx:isbn}
     {\printfield{isrn}}
+    {}%
+  \newunit\newblock
+  \usebibmacro{doi+eprint+url}%
+  \newunit\newblock
+  \usebibmacro{addendum+pubstate}%
+  \setunit{\bibpagerefpunct}\newblock
+  \usebibmacro{pageref}%
+  \newunit\newblock
+  \iftoggle{bbx:related}
+    {\usebibmacro{related:init}%
+     \usebibmacro{related}}
+    {}%
+  \usebibmacro{finentry}}
+
+% A series with a number identifies the manual and follows the location,
+% a series without one names the series and follows the title
+% Examples: "RCA Receiving Tube Manual, Radio Corp. of America, Electronic
+% Components and Devices, Harrison, NJ, USA, Tech. Ser. RC23, 1992";
+% "Microsoft Office 97 Visual Basic Programmer's Guide, Microsoft Professional
+% Editions Series, Microsoft, Redmond, WA, USA, 1997"
+\DeclareBibliographyDriver{manual}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{begentry}%
+  \usebibmacro{author/editor}%
+  \setunit{\printdelim{nametitledelim}}\newblock
+  \usebibmacro{title}%
+  \newunit
+  \printlist{language}%
+  \newunit\newblock
+  \usebibmacro{byauthor}%
+  \newunit\newblock
+  \usebibmacro{byeditor}%
+  \newunit\newblock
+  \printfield{edition}%
+  \newunit\newblock
+  \iffieldundef{number}
+    {\usebibmacro{series+number}}
+    {}%
+  \newunit\newblock
+  \printfield{type}%
+  \newunit
+  \printfield{version}%
+  \newunit
+  \printfield{note}%
+  \newunit\newblock
+  \printlist{organization}%
+  \newunit
+  \usebibmacro{publisher+location+series+date(manual)}%
+  \newunit\newblock
+  \usebibmacro{chapter+pages}%
+  \newunit
+  \printfield{pagetotal}%
+  \newunit\newblock
+  \iftoggle{bbx:isbn}
+    {\printfield{isbn}}
     {}%
   \newunit\newblock
   \usebibmacro{doi+eprint+url}%
