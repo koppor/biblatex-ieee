@@ -10,5 +10,5 @@ ieee-reference-guide/*
 !ieee-reference-guide/README.md
 !ieee-reference-guide/ieee-reference-guide-biblatex.tex
 !ieee-reference-guide/ieee-reference-guide.bib
-!ieee-reference-guide/ieee-reference-guide-typeset.tex
+!ieee-reference-guide/ieee-reference-guide-typeset-in-latex.tex
 !ieee-reference-guide/.latexmkrc
