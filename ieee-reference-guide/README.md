@@ -12,3 +12,5 @@ as a `biblatex` database (`ieee-reference-guide.bib`) and two documents that typ
 Compile with `latexmk ieee-reference-guide-biblatex ieee-reference-guide-typeset` (LuaLaTeX and biber, see `.latexmkrc`;
 the repository's style files are used, not the installed ones).
 The `IEEE Reference Guide` workflow builds both PDFs and uploads them as artifacts.
+
+Questions about the guide itself (inconsistent or erroneous examples) go to IEEE via [IEEE Reference Assistant](https://refassist.ieee.org/).
