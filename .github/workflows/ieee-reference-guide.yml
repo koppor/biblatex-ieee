@@ -23,7 +23,7 @@ jobs:
           packages: >
             latex-bin latexmk biber biblatex csquotes xurl tex-gyre
             fontspec microtype selnolig luacode luatexbase minted
-            titlesec enumitem geometry hyperref
+            titlesec enumitem geometry hyperref amsfonts
       - name: Typeset
         working-directory: ieee-reference-guide
         run: latexmk -interaction=nonstopmode -halt-on-error ieee-reference-guide ieee-reference-guide-typeset
